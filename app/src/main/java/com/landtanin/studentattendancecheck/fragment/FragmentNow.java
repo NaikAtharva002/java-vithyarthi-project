@@ -206,6 +206,10 @@ public class FragmentNow extends Fragment {
                                 @Override
                                 public void run() {
 
+                                    if (!isAdded() || getContext() == null || b == null) {
+                                        return;
+                                    }
+
                                     updateNow();
                                     boolean show = prefs.getBoolean("checked_state", false);
                                     Log.e("FragmentNow prefs track", String.valueOf(show));
@@ -646,6 +650,15 @@ public class FragmentNow extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance (Fragment level's variables) State here
+    }
+
+    @Override
+    public void onDestroyView() {
+        run = false;
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+        }
+        super.onDestroyView();
     }
 
 }

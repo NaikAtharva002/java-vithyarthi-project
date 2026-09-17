@@ -80,19 +80,27 @@ public class CheckInActivity extends AppCompatActivity implements GoogleApiClien
         TodayModule todayModule = TodayModule.getInstance();
         RealmResults<StudentModuleDao> studentModuleDao = todayModule.getTodayModule();
 
-        int targetingModule = getIntent().getExtras().getInt("moduleItem");
+        Bundle extras = getIntent() != null ? getIntent().getExtras() : null;
+        int targetingModule = (extras != null) ? extras.getInt("moduleItem", 0) : 0;
         Log.i("CheckInActivity initInstance", String.valueOf(targetingModule));
-        moduleLat = studentModuleDao.get(targetingModule).getLocLat();
-        moduleLng = studentModuleDao.get(targetingModule).getLocLng();
-        className = studentModuleDao.get(targetingModule).getRoom();
+
+        if (studentModuleDao != null && !studentModuleDao.isEmpty() && targetingModule >= 0 && targetingModule < studentModuleDao.size()) {
+            StudentModuleDao target = studentModuleDao.get(targetingModule);
+            moduleLat = target.getLocLat();
+            moduleLng = target.getLocLng();
+            className = target.getRoom();
+            module_id = target.getModuleId();
+        } else {
+            Toast.makeText(this, "Module data not available", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
-        module_id = studentModuleDao.get(targetingModule).getModuleId();
 
         b.clickToAddModuleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,19 +114,20 @@ public class CheckInActivity extends AppCompatActivity implements GoogleApiClien
 
                 LatLng moduleLocation = new LatLng(moduleLat, moduleLng);
                 LatLng studentLocation = new LatLng(douMyLat, douMyLng);
-//                checkInBounds = toBounds(moduleLocation, 432);
                 checkInBounds = toBounds(moduleLocation, 1000);
-                // 432 is the smallest radius from house to Coates
+
+                double distanceMeters = com.landtanin.studentattendancecheck.util.GeofenceUtils.calculateDistanceMeters(
+                        douMyLat, douMyLng, moduleLat, moduleLng);
 
                 Log.w("module Location", String.valueOf(moduleLocation));
                 Log.w("student Location", String.valueOf(studentLocation));
+                Log.w("distanceMeters", String.valueOf(distanceMeters));
 
-//                if (checkInBounds.contains(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))) {
-
-                if (checkInBounds.contains(studentLocation)) {
+                if (checkInBounds.contains(studentLocation) || distanceMeters <= 1000.0) {
                     initiatePopupWindow();
                 } else {
-                    Toast.makeText(CheckInActivity.this, "OUTBOUND", Toast.LENGTH_SHORT).show();
+                    String distanceStr = distanceMeters > 1000 ? String.format("%.1f km", distanceMeters / 1000.0) : String.format("%.0f m", distanceMeters);
+                    Toast.makeText(CheckInActivity.this, "Out of attendance range (" + distanceStr + " away). Please move closer to the classroom.", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -385,9 +394,13 @@ public class CheckInActivity extends AppCompatActivity implements GoogleApiClien
 
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            if (map != null) {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 17));
-                Log.w("CheckInActivity updateLocation: ", "updateLocation");
+            if (mLastLocation != null) {
+                douMyLat = mLastLocation.getLatitude();
+                douMyLng = mLastLocation.getLongitude();
+                if (map != null) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(douMyLat, douMyLng), 17));
+                    Log.w("CheckInActivity updateLocation: ", "updateLocation");
+                }
             }
 
         }

@@ -113,35 +113,38 @@ public class FragmentHome extends Fragment {
 //
 //        b.homeFragmentSlidingTabLayout.setViewPager(b.homeFragmentViewPager);
 
-        String provider = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+        Context context = getContext();
+        if (context != null) {
+            String provider = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            if (provider == null || !provider.contains("gps")) { // if gps is disabled
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
-        if(!provider.contains("gps")){ //if gps is disabled
+                // Setting Dialog Title
+                alertDialog.setTitle("Location service is required");
 
-            // Setting Dialog Title
-            alertDialog.setTitle("Location service is required");
+                // Setting Dialog Message
+                alertDialog.setMessage("This app requires the Location service to identify device's location. Do you want to go to settings menu?");
 
-            // Setting Dialog Message
-            alertDialog.setMessage("This app requires the Location service to identify device's location. Do you want to go to settings menu?");
+                // On pressing Settings button
+                alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        if (getContext() != null) {
+                            getContext().startActivity(intent);
+                        }
+                    }
+                });
 
-            // On pressing Settings button
-            alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int which) {
-                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    getContext().startActivity(intent);
-                }
-            });
+                // on pressing cancel button
+                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
 
-            // on pressing cancel button
-            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            // Showing Alert Message
-            alertDialog.show();
-
+                // Showing Alert Message
+                alertDialog.show();
+            }
         }
 
         FragmentHomePagerAdapter fragmentHomePagerAdapter =

@@ -93,16 +93,30 @@ public class FragmentLogin extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    String inputEmail = b.edtLoginEmail.getText().toString().trim();
+                    String inputPassword = b.edtLoginPassword.getText().toString();
+
+                    if (!com.landtanin.studentattendancecheck.util.ValidationUtils.isValidEmail(inputEmail)) {
+                        Toast.makeText(getContext(), "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+                        b.edtLoginEmail.requestFocus();
+                        return;
+                    }
+
+                    if (!com.landtanin.studentattendancecheck.util.ValidationUtils.isValidPassword(inputPassword)) {
+                        Toast.makeText(getContext(), "Password must be at least 4 characters", Toast.LENGTH_SHORT).show();
+                        b.edtLoginPassword.requestFocus();
+                        return;
+                    }
+
+                    email = inputEmail;
+                    password = inputPassword;
+
                     dialog = new ProgressDialog(getActivity());
                     dialog.setMessage("Please Wait...");
                     dialog.setCancelable(false);
                     dialog.setCanceledOnTouchOutside(false);
                     dialog.show();
 
-//                    Toast.makeText(getContext(), "button clicked", Toast.LENGTH_SHORT).show();
-
-                    email = b.edtLoginEmail.getText().toString();
-                    password = b.edtLoginPassword.getText().toString();
                     getLogin(); // MOVE TO BACKGROUND
 
                     Log.w("BACKGROUND", "OFF from onPostExecute()");
@@ -196,9 +210,11 @@ public class FragmentLogin extends Fragment {
                     public void call(Throwable throwable) {
 
                         dialog.dismiss();
-//                        Utils.getInstance().onHoneyToast("LOGIN "+throwable.getLocalizedMessage());
                         Log.w("LOGIN CONNECTION PROBLEM", throwable.getLocalizedMessage());
-
+                        String msg = throwable.getLocalizedMessage() != null ? throwable.getLocalizedMessage() : "Network error";
+                        if (getContext() != null) {
+                            Toast.makeText(getContext(), "Login connection failed: " + msg, Toast.LENGTH_LONG).show();
+                        }
 
                     }
                 });
@@ -238,8 +254,10 @@ public class FragmentLogin extends Fragment {
                     @Override
                     public void call(Throwable throwable) {
                         dialog.dismiss();
-                        Utils.getInstance().onHoneyToast("STUDENT "+throwable.getLocalizedMessage());
-
+                        String msg = throwable.getLocalizedMessage() != null ? throwable.getLocalizedMessage() : "Network error";
+                        if (getContext() != null) {
+                            Toast.makeText(getContext(), "Unable to load student data: " + msg, Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
 
