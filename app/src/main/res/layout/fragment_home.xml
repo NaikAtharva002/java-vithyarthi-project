@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout
+                android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              >
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/fragHomeTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/colorAccent"
+        app:tabIndicatorHeight="2dp"
+        app:tabMode="fixed"
+        app:tabPaddingEnd="-1dp"
+        android:background="@color/colorPrimary"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabTextColor="@color/colorDarkWhite"
+        android:fillViewport="false"/>
+
+    <com.landtanin.studentattendancecheck.view.NonSwipableViewPager
+        android:id="@+id/fragmentHomeNonSwipViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
+
+</layout>

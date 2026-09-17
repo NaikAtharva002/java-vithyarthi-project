@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.landtanin.studentattendancecheck">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name=".activity.MainActivity"
+                  android:screenOrientation="userPortrait">
+
+        </activity>
+
+        <activity android:name=".activity.AddModuleActivity"
+                  android:screenOrientation="userPortrait">
+        </activity>
+
+        <activity android:name=".activity.CheckInActivity"
+                  android:screenOrientation="userPortrait">
+        </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="30622b972a5f3a88b7dbfa7cc6fce4163e600781"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDU2l9X5MXRfIGZnvdpgFk9-CYkqTufXUM"/>
+
+
+        <activity android:name=".activity.LoginActivity"
+                  android:screenOrientation="userPortrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
